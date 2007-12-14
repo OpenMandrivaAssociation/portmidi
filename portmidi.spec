@@ -4,7 +4,7 @@
 %define libname	%mklibname %{name} %{major}
 %define develname %mklibname -d %{name}
 
-Summary:	PortMidi -- real-time MIDI input/output, audio I/O library
+Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
 Version:	%{version}
 Release:	%mkrel 1
@@ -31,7 +31,7 @@ porttime libraries.
  * %{_bindir}/portmidi-test
 
 %package -n	%{libname}
-Summary:	PortMidi -- real-time MIDI input/output, audio I/O library
+Summary:	Real-time MIDI input/output, audio I/O library
 Group:		System/Libraries
 
 %description -n	%{libname}
