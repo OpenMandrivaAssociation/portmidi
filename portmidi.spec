@@ -15,7 +15,6 @@ Source0:	http://www.cs.cmu.edu/~music/portmusic/portmidi/portmidi17Jan07.zip
 Patch0:		portmidi-shared.diff
 BuildRequires:	libalsa-devel >= 0.9
 BuildRequires:	dos2unix
-BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 
 %description
 PortMidi -- real-time MIDI input/output.
