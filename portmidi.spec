@@ -7,7 +7,7 @@
 Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
 Version:	%{version}
-Release:	%mkrel 3
+Release:	%mkrel 4
 License:	GPL
 Group:		System/Libraries
 URL:		http://www-2.cs.cmu.edu/~music/portmusic/
