@@ -1,21 +1,19 @@
-%define version 20070107
-
 %define	major 0
 %define libname	%mklibname %{name} %{major}
 %define develname %mklibname -d %{name}
 
 Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
-Version:	%{version}
-Release:	%mkrel 4
+Epoch:		0
+Version:	217
+Release:	%mkrel 1
 License:	GPL
 Group:		System/Libraries
 URL:		http://portmedia.sourceforge.net
-Source0:	http://www.cs.cmu.edu/~music/portmusic/portmidi/portmidi17Jan07.zip
-Patch0:		portmidi-shared.diff
-Patch1:		portmidi-fix-str-fmt.patch
-BuildRequires:	libalsa-devel >= 0.9
-BuildRequires:	dos2unix
+Source0:	http://downloads.sourceforge.net/portmedia/%{name}-src-%{version}.zip
+Patch0:		portmidi-217-cmake-libdir-java-opts.patch
+BuildRequires:	libalsa-devel
+BuildRequires:	cmake
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 
 %description
@@ -34,6 +32,7 @@ porttime libraries.
 %package -n	%{libname}
 Summary:	Real-time MIDI input/output, audio I/O library
 Group:		System/Libraries
+Conflicts:	%{_lib}portmidi-devel < %{epoch}:%{version}
 
 %description -n	%{libname}
 PortMidi -- real-time MIDI input/output.
@@ -43,9 +42,9 @@ This package provides the shared libraries for portmidi and porttime.
 %package -n	%{develname}
 Summary:	Development files for PortMidi
 Group:		Development/C
-Requires:	%{libname} = %{version}-%{release}
-Obsoletes:	%{name}-devel
-Provides:	%{name}-devel = %{version}-%{release}
+Requires:	%{libname} = %{epoch}:%{version}-%{release}
+Obsoletes:	%{name}-devel < %{epoch}:%{version}
+Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
 
 %description -n	%{develname}
 PortMidi -- real-time MIDI input/output.
@@ -54,49 +53,26 @@ This package provides the development libraries and headers for portmidi and
 porttime.
 
 %prep
-
 %setup -q -n %{name}
-
-# strip away annoying ^M
-find -type f | xargs dos2unix -U
-
-%patch0 -p0
-
-cp pm_linux/Makefile .
-
-# fix attribs
-chmod 644 CHANGELOG.txt README.txt license.txt portmusic_logo.png pm_cl/* pm_linux/README_LINUX.txt
+%patch0 -p1 -b .java
 
 %build
 %define Werror_cflags %nil
-%make CFLAGS="%{optflags} %{ldflags} -fPIC" PMFLAGS="-DNEWBUFFER"
+%cmake -DPORTMIDI_ENABLE_JAVA=OFF -DCMAKE_CACHEFILE_DIR=`pwd`
+%make
 
 %install
 rm -rf %{buildroot}
+%makeinstall_std -C build
 
 install -d %{buildroot}%{_bindir}
-install -d %{buildroot}%{_libdir}
-install -d %{buildroot}%{_includedir}
-
-install -m0755 pm_test/latency %{buildroot}%{_bindir}/portmidi-latency
-install -m0755 pm_test/midithread %{buildroot}%{_bindir}/portmidi-midithread
-install -m0755 pm_test/midithru %{buildroot}%{_bindir}/portmidi-midithru
-install -m0755 pm_test/sysex %{buildroot}%{_bindir}/portmidi-sysex
-install -m0755 pm_test/test %{buildroot}%{_bindir}/portmidi-test
-
-install -m0755 pm_linux/libportmidi.so.0.17 %{buildroot}%{_libdir}/
-ln -snf libportmidi.so.0.17 %{buildroot}%{_libdir}/libportmidi.so.0
-ln -snf libportmidi.so.0.17 %{buildroot}%{_libdir}/libportmidi.so
-
-install -m0755 porttime/libporttime.so.0.17 %{buildroot}%{_libdir}/
-ln -snf libporttime.so.0.17 %{buildroot}%{_libdir}/libporttime.so.0
-ln -snf libporttime.so.0.17 %{buildroot}%{_libdir}/libporttime.so
-
-install -m0644 pm_common/%{name}.h %{buildroot}%{_includedir}/
-install -m0644 porttime/porttime.h %{buildroot}%{_includedir}/
-
-install -m0644 pm_linux/libportmidi.a %{buildroot}%{_libdir}
-install -m0644 porttime/libporttime.a %{buildroot}%{_libdir}
+pushd build/release
+install -m0755 latency %{buildroot}%{_bindir}/portmidi-latency
+install -m0755 midithread %{buildroot}%{_bindir}/portmidi-midithread
+install -m0755 midithru %{buildroot}%{_bindir}/portmidi-midithru
+install -m0755 sysex %{buildroot}%{_bindir}/portmidi-sysex
+install -m0755 test %{buildroot}%{_bindir}/portmidi-test
+popd
 
 %if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
@@ -120,10 +96,8 @@ rm -rf %{buildroot}
 %files -n %{libname}
 %defattr(-,root,root)
 %doc CHANGELOG.txt README.txt license.txt portmusic_logo.png pm_cl/* pm_linux/README_LINUX.txt
-%{_libdir}/*.so.*
+%{_libdir}/*.so
 
 %files -n %{develname}
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/*.a
-%{_libdir}/*.so
