@@ -4,7 +4,7 @@
 
 Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
-Epoch:		0
+Epoch:		1
 Version:	217
 Release:	%mkrel 1
 License:	GPL
