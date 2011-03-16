@@ -10,9 +10,10 @@ Version:	%{version}
 Release:	%mkrel 4
 License:	GPL
 Group:		System/Libraries
-URL:		http://www-2.cs.cmu.edu/~music/portmusic/
+URL:		http://portmedia.sourceforge.net
 Source0:	http://www.cs.cmu.edu/~music/portmusic/portmidi/portmidi17Jan07.zip
 Patch0:		portmidi-shared.diff
+Patch1:		portmidi-fix-str-fmt.patch
 BuildRequires:	libalsa-devel >= 0.9
 BuildRequires:	dos2unix
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
@@ -67,8 +68,8 @@ cp pm_linux/Makefile .
 chmod 644 CHANGELOG.txt README.txt license.txt portmusic_logo.png pm_cl/* pm_linux/README_LINUX.txt
 
 %build
-
-%make CFLAGS="%{optflags} -fPIC" PMFLAGS="-DNEWBUFFER"
+%define Werror_cflags %nil
+%make CFLAGS="%{optflags} %{ldflags} -fPIC" PMFLAGS="-DNEWBUFFER"
 
 %install
 rm -rf %{buildroot}
