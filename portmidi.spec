@@ -6,15 +6,14 @@ Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
 Epoch:		1
 Version:	217
-Release:	%mkrel 1
+Release:	2
 License:	GPL
 Group:		System/Libraries
 URL:		http://portmedia.sourceforge.net
 Source0:	http://downloads.sourceforge.net/portmedia/%{name}-src-%{version}.zip
 Patch0:		portmidi-217-cmake-libdir-java-opts.patch
-BuildRequires:	libalsa-devel
+BuildRequires:	pkgconfig(alsa)
 BuildRequires:	cmake
-BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 
 %description
 PortMidi -- real-time MIDI input/output.
@@ -62,11 +61,10 @@ porttime.
 %make
 
 %install
-rm -rf %{buildroot}
 %makeinstall_std -C build
 
 install -d %{buildroot}%{_bindir}
-pushd build/release
+pushd build/Release
 install -m0755 latency %{buildroot}%{_bindir}/portmidi-latency
 install -m0755 midithread %{buildroot}%{_bindir}/portmidi-midithread
 install -m0755 midithru %{buildroot}%{_bindir}/portmidi-midithru
@@ -74,19 +72,7 @@ install -m0755 sysex %{buildroot}%{_bindir}/portmidi-sysex
 install -m0755 test %{buildroot}%{_bindir}/portmidi-test
 popd
 
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
-
-%clean
-rm -rf %{buildroot}
-
 %files
-%defattr(-,root,root)
 %{_bindir}/portmidi-latency
 %{_bindir}/portmidi-midithread
 %{_bindir}/portmidi-midithru
@@ -94,10 +80,40 @@ rm -rf %{buildroot}
 %{_bindir}/portmidi-test
 
 %files -n %{libname}
-%defattr(-,root,root)
 %doc CHANGELOG.txt README.txt license.txt portmusic_logo.png pm_cl/* pm_linux/README_LINUX.txt
 %{_libdir}/*.so
 
 %files -n %{develname}
-%defattr(-,root,root)
 %{_includedir}/*
+
+%changelog
+* Wed Mar 16 2011 Funda Wang <fwang@mandriva.org> 1:217-1mdv2011.0
++ Revision: 645495
+- bump epoch
+- new version 217
+- add gentoo propsed patch to conditonal build java binding
+- fix linkage
+
+  + Thierry Vignaud <tv@mandriva.org>
+    - rebuild
+
+* Wed Jul 23 2008 Thierry Vignaud <tv@mandriva.org> 20070107-3mdv2009.0
++ Revision: 242328
+- rebuild
+- kill re-definition of %%buildroot on Pixel's request
+- fix summary
+
+  + Pixel <pixel@mandriva.com>
+    - do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+* Tue Jul 31 2007 Oden Eriksson <oeriksson@mandriva.com> 20070107-1mdv2008.0
++ Revision: 57170
+- Import portmidi
+
+
+
+* Tue Jul 31 2007 Oden Eriksson <oeriksson@mandriva.com> 20070107-1mdv2008.0
+- initial Mandriva package
