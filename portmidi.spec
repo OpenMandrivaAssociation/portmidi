@@ -64,7 +64,7 @@ porttime.
 %makeinstall_std -C build
 
 install -d %{buildroot}%{_bindir}
-pushd build/Release
+pushd build/release
 install -m0755 latency %{buildroot}%{_bindir}/portmidi-latency
 install -m0755 midithread %{buildroot}%{_bindir}/portmidi-midithread
 install -m0755 midithru %{buildroot}%{_bindir}/portmidi-midithru
