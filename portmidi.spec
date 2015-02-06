@@ -6,7 +6,7 @@ Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
 Epoch:		1
 Version:	217
-Release:	3
+Release:	4
 License:	GPL
 Group:		System/Libraries
 URL:		http://portmedia.sourceforge.net
