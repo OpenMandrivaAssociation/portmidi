@@ -4,7 +4,6 @@
 
 Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
-Epoch:		1
 Version:	217
 Release:	4
 License:	GPL
@@ -31,7 +30,7 @@ porttime libraries.
 %package -n	%{libname}
 Summary:	Real-time MIDI input/output, audio I/O library
 Group:		System/Libraries
-Conflicts:	%{_lib}portmidi-devel < %{epoch}:%{version}
+Conflicts:	%{_lib}portmidi-devel < %{version}
 
 %description -n	%{libname}
 PortMidi -- real-time MIDI input/output.
@@ -41,9 +40,9 @@ This package provides the shared libraries for portmidi and porttime.
 %package -n	%{develname}
 Summary:	Development files for PortMidi
 Group:		Development/C
-Requires:	%{libname} = %{epoch}:%{version}-%{release}
-Obsoletes:	%{name}-devel < %{epoch}:%{version}
-Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
+Requires:	%{libname} = %{version}-%{release}
+Obsoletes:	%{name}-devel < %{version}
+Provides:	%{name}-devel = %{version}-%{release}
 
 %description -n	%{develname}
 PortMidi -- real-time MIDI input/output.
