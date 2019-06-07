@@ -5,7 +5,7 @@
 Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
 Version:	217
-Release:	4
+Release:	5
 License:	GPL
 Group:		System/Libraries
 URL:		http://portmedia.sourceforge.net
@@ -13,6 +13,7 @@ Source0:	http://downloads.sourceforge.net/portmedia/%{name}-src-%{version}.zip
 Patch0:		portmidi-217-cmake-libdir-java-opts.patch
 BuildRequires:	pkgconfig(alsa)
 BuildRequires:	cmake
+BuildRequires:	ninja
 
 %description
 PortMidi -- real-time MIDI input/output.
@@ -51,16 +52,15 @@ This package provides the development libraries and headers for portmidi and
 porttime.
 
 %prep
-%setup -q -n %{name}
-%patch0 -p1 -b .java
+%autosetup -p1 -n %{name}
 
 %build
 %define Werror_cflags %nil
-%cmake -DPORTMIDI_ENABLE_JAVA=OFF -DCMAKE_CACHEFILE_DIR=`pwd`
-%make
+%cmake -DPORTMIDI_ENABLE_JAVA=OFF -DCMAKE_CACHEFILE_DIR=`pwd` -G Ninja
+%ninja_build -w dupbuild=warn
 
 %install
-%makeinstall_std -C build
+%ninja_install -C build -w dupbuild=warn
 
 install -d %{buildroot}%{_bindir}
 pushd build/release
@@ -84,35 +84,3 @@ popd
 
 %files -n %{develname}
 %{_includedir}/*
-
-%changelog
-* Wed Mar 16 2011 Funda Wang <fwang@mandriva.org> 1:217-1mdv2011.0
-+ Revision: 645495
-- bump epoch
-- new version 217
-- add gentoo propsed patch to conditonal build java binding
-- fix linkage
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - rebuild
-
-* Wed Jul 23 2008 Thierry Vignaud <tv@mandriva.org> 20070107-3mdv2009.0
-+ Revision: 242328
-- rebuild
-- kill re-definition of %%buildroot on Pixel's request
-- fix summary
-
-  + Pixel <pixel@mandriva.com>
-    - do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
-
-  + Olivier Blin <oblin@mandriva.com>
-    - restore BuildRoot
-
-* Tue Jul 31 2007 Oden Eriksson <oeriksson@mandriva.com> 20070107-1mdv2008.0
-+ Revision: 57170
-- Import portmidi
-
-
-
-* Tue Jul 31 2007 Oden Eriksson <oeriksson@mandriva.com> 20070107-1mdv2008.0
-- initial Mandriva package
