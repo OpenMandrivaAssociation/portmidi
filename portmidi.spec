@@ -57,10 +57,10 @@ porttime.
 %build
 %define Werror_cflags %nil
 %cmake -DPORTMIDI_ENABLE_JAVA=OFF -DCMAKE_CACHEFILE_DIR=`pwd` -G Ninja
-%ninja_build -w dupbuild=warn
+%ninja_build
 
 %install
-%ninja_install -C build -w dupbuild=warn
+%ninja_install -C build
 
 install -d %{buildroot}%{_bindir}
 pushd build/release
