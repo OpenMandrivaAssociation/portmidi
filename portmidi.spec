@@ -4,13 +4,14 @@
 
 Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
-Version:	217
-Release:	5
+Version:	234
+Release:	1
 License:	GPL
 Group:		System/Libraries
 URL:		http://portmedia.sourceforge.net
-Source0:	http://downloads.sourceforge.net/portmedia/%{name}-src-%{version}.zip
+Source0:	https://nav.dl.sourceforge.net/project/portmedia/portmedia-code-r%{version}.zip
 Patch0:		portmidi-217-cmake-libdir-java-opts.patch
+Patch1:		portmidi-fix-soname-and-cflags.patch
 BuildRequires:	pkgconfig(alsa)
 BuildRequires:	cmake
 BuildRequires:	ninja
@@ -52,18 +53,17 @@ This package provides the development libraries and headers for portmidi and
 porttime.
 
 %prep
-%autosetup -p1 -n %{name}
+%autosetup -p1 -n portmedia-code-r%{version}/portmidi/trunk
 
 %build
-%define Werror_cflags %nil
-%cmake -DPORTMIDI_ENABLE_JAVA=OFF -DCMAKE_CACHEFILE_DIR=`pwd` -G Ninja
-%ninja_build -w dupbuild=warn
+%cmake -DPORTMIDI_ENABLE_JAVA=OFF -DCMAKE_CACHEFILE_DIR=`pwd`
+%make_build
 
 %install
-%ninja_install -C build -w dupbuild=warn
+%make_install -C build
 
 install -d %{buildroot}%{_bindir}
-pushd build/release
+pushd build/RelWithDebInfo
 install -m0755 latency %{buildroot}%{_bindir}/portmidi-latency
 install -m0755 midithread %{buildroot}%{_bindir}/portmidi-midithread
 install -m0755 midithru %{buildroot}%{_bindir}/portmidi-midithru
@@ -80,7 +80,8 @@ popd
 
 %files -n %{libname}
 %doc CHANGELOG.txt README.txt license.txt portmusic_logo.png pm_cl/* pm_linux/README_LINUX.txt
-%{_libdir}/*.so
+%{_libdir}/*.so.*
 
 %files -n %{develname}
 %{_includedir}/*
+%{_libdir}/*.so
