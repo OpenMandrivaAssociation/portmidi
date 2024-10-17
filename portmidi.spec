@@ -8,7 +8,7 @@ Version:	234
 Release:	3
 License:	GPL
 Group:		System/Libraries
-URL:		http://portmedia.sourceforge.net
+URL:		https://portmedia.sourceforge.net
 Source0:	https://nav.dl.sourceforge.net/project/portmedia/portmedia-code-r%{version}.zip
 Patch0:		portmidi-217-cmake-libdir-java-opts.patch
 Patch1:		portmidi-fix-soname-and-cflags.patch
