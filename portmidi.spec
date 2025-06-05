@@ -1,19 +1,24 @@
 %define		major	2
-%define		libname	%mklibname %{name} %{major}
+%define		veryoldlibname %mklibname %{name} 0
+%define		oldlibname %mklibname %{name} 2
+%define		libname	%mklibname %{name}
+%define		jlibname	%mklibname pmjni
 %define		develname	%mklibname -d %{name}
 
-Summary:		Real-time MIDI input/output, audio I/O library
+Summary:	Real-time MIDI input/output, audio I/O library
 Name:		portmidi
-Version:		2.0.4
-Release:		1
+Version:	2.0.4
+Release:	2
 License:	GPLv2+
-Group:	Sound
+Group:		Sound
 Url:		https://github.com/PortMidi/portmidi
 Source0:	https://github.com/PortMidi/portmidi/archive/refs/tags/%{name}-%{version}.tar.gz
-#Patch0:		portmidi-2.0.3-disable-missing-test-program.patch
-BuildRequires:		cmake >= 3.21
-BuildRequires:		doxygen
-BuildRequires:		pkgconfig(alsa)
+#Patch0:	portmidi-2.0.3-disable-missing-test-program.patch
+BuildRequires:	cmake >= 3.21
+BuildRequires:	ninja
+BuildRequires:	doxygen
+BuildRequires:	pkgconfig(alsa)
+BuildRequires:	jdk-current
 
 %description
 PortMidi -- real-time MIDI input/output. This package provides test
@@ -48,6 +53,8 @@ applications that utilize the portmidi library; among them:
 Summary:		Real-time MIDI input/output, audio I/O library
 Group:		System/Libraries
 Conflicts:	%{_lib}portmidi-devel < %{EVRD}
+%rename %{oldlibname}
+Obsoletes: %{veryoldlibname}
 
 %description -n	%{libname}
 PortMidi -- real-time MIDI input/output. This package provides the shared
@@ -79,6 +86,19 @@ libraries and headers for portmidi.
 %{_libdir}/cmake/PortMidi/*.cmake
 
 #-----------------------------------------------------------------------------
+ 
+%package -n	%{jlibname}
+Summary:	Java interface to the PortMidi library
+Group:		System/Libraries
+Requires:	%{libname} = %{EVRD}
+
+%description -n	%{jlibname}
+Java interface to PortMidi -- real-time MIDI input/output.
+
+%files -n %{jlibname}
+%{_libdir}/libpmjni.so*
+
+#-----------------------------------------------------------------------------
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
@@ -92,18 +112,21 @@ sed -i 's|${prefix}\/lib|${prefixr}\/%{_lib}|g' packaging/%{name}.pc.in
 
 
 %build
-%cmake	-DCMAKE_CACHEFILE_DIR=`pwd`	\
-			-DBUILD_JAVA_NATIVE_INTERFACE="OFF" \
-			-DBUILD_PORTMIDI_TESTS="ON"
+. /etc/profile.d/90java.sh
 
-%make
+%cmake	-DCMAKE_CACHEFILE_DIR=`pwd`	\
+	-DBUILD_JAVA_NATIVE_INTERFACE="ON" \
+	-DBUILD_PORTMIDI_TESTS="ON" \
+	-G Ninja
+
+%ninja_build
 
 # Make devel docs
 doxygen ../Doxyfile
 
 
 %install
-%makeinstall_std -C build
+%ninja_install -C build
 
 install -d %{buildroot}%{_bindir}
 pushd build/pm_test
